@@ -8,49 +8,60 @@ datasource db {
 }
 
 model User {
-  id           String               @id @default(uuid()) @db.Uuid
-  username     String               @unique
-  createdAt    DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  memberships  ConversationMember[]
-  messages     Message[]
+  id          String               @id @default(uuid()) @db.Uuid
+  username    String               @unique
+  createdAt   DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  memberships ConversationMember[]
+  messages    Message[]
 
   @@map("users")
 }
 
 model Conversation {
-  id        String               @id @default(uuid()) @db.Uuid
-  type      String               @db.VarChar(32)
-  createdAt DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  members   ConversationMember[]
-  messages  Message[]
+  id             String               @id @default(uuid()) @db.Uuid
+  type           String               @db.VarChar(32)
+  // For type "direct" (case insensitive), supply the two sorted user IDs.
+  // SQL checks/triggers require exactly these memberships at transaction commit.
+  directUserLow  String?              @map("direct_user_low") @db.Uuid
+  directUserHigh String?              @map("direct_user_high") @db.Uuid
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  members        ConversationMember[]
+  messages       Message[]
 
+  @@unique([directUserLow, directUserHigh])
   @@map("conversations")
 }
 
 model ConversationMember {
-  conversationId    String        @map("conversation_id") @db.Uuid
-  userId            String        @map("user_id") @db.Uuid
-  joinedAt          DateTime      @default(now()) @map("joined_at") @db.Timestamptz(6)
-  lastReadMessageId String?       @map("last_read_message_id") @db.Uuid
-  conversation      Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lastReadMessage   Message?      @relation("LastReadMessage", fields: [lastReadMessageId], references: [id], onDelete: SetNull)
+  conversationId    String       @map("conversation_id") @db.Uuid
+  userId            String       @map("user_id") @db.Uuid
+  joinedAt          DateTime     @default(now()) @map("joined_at") @db.Timestamptz(6)
+  lastReadMessageId String?      @map("last_read_message_id") @db.Uuid
+  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Clear read pointers before deleting the referenced message.
+  lastReadMessage   Message?     @relation("LastReadMessage", fields: [conversationId, lastReadMessageId], references: [conversationId, id], onDelete: NoAction, onUpdate: NoAction)
+  sentMessages      Message[]    @relation("MessageMembership")
 
   @@id([conversationId, userId])
   @@index([userId])
+  @@index([conversationId, lastReadMessageId])
   @@map("conversation_members")
 }
 
 model Message {
-  id                 String               @id @default(uuid()) @db.Uuid
-  conversationId     String               @map("conversation_id") @db.Uuid
-  senderId           String               @map("sender_id") @db.Uuid
-  content            String               @db.Text
-  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  conversation       Conversation         @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender             User                 @relation(fields: [senderId], references: [id])
-  readByMembers      ConversationMember[] @relation("LastReadMessage")
+  id               String               @id @default(uuid()) @db.Uuid
+  conversationId   String               @map("conversation_id") @db.Uuid
+  senderId         String               @map("sender_id") @db.Uuid
+  content          String               @db.Text
+  createdAt        DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  conversation     Conversation         @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender           User                 @relation(fields: [senderId], references: [id])
+  senderMembership ConversationMember   @relation("MessageMembership", fields: [conversationId, senderId], references: [conversationId, userId], onDelete: NoAction, onUpdate: NoAction)
+  readByMembers    ConversationMember[] @relation("LastReadMessage")
 
+  @@unique([conversationId, id])
+  @@index([conversationId, senderId])
   @@index([conversationId, createdAt])
   @@index([senderId])
   @@map("messages")
