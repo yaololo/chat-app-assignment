@@ -28,6 +28,8 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-chat_app}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-chat_app}?schema=public
       CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:3000}
       PORT: 3000
+      AUTH_SIGNING_SECRET: ${AUTH_SIGNING_SECRET:?Set a random AUTH_SIGNING_SECRET of at least 32 bytes in the root .env file}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
     ports:
       - "3000:3000"
     restart: unless-stopped
