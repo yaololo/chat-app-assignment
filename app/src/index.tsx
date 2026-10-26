@@ -14,6 +14,7 @@ if (!root) {
 createRoot(root).render(
   <StrictMode>
     <BrowserRouter>
+    <div>hello</div>
       {/* <App /> */}
     </BrowserRouter>
   </StrictMode>,

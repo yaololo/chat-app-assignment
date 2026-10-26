@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String               @id @default(uuid()) @db.Uuid
+  username     String               @unique
+  createdAt    DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  memberships  ConversationMember[]
+  messages     Message[]
+
+  @@map("users")
+}
+
+model Conversation {
+  id        String               @id @default(uuid()) @db.Uuid
+  type      String               @db.VarChar(32)
+  createdAt DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  members   ConversationMember[]
+  messages  Message[]
+
+  @@map("conversations")
+}
+
+model ConversationMember {
+  conversationId    String        @map("conversation_id") @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  joinedAt          DateTime      @default(now()) @map("joined_at") @db.Timestamptz(6)
+  lastReadMessageId String?       @map("last_read_message_id") @db.Uuid
+  conversation      Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastReadMessage   Message?      @relation("LastReadMessage", fields: [lastReadMessageId], references: [id], onDelete: SetNull)
+
+  @@id([conversationId, userId])
+  @@index([userId])
+  @@map("conversation_members")
+}
+
+model Message {
+  id                 String               @id @default(uuid()) @db.Uuid
+  conversationId     String               @map("conversation_id") @db.Uuid
+  senderId           String               @map("sender_id") @db.Uuid
+  content            String               @db.Text
+  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  conversation       Conversation         @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender             User                 @relation(fields: [senderId], references: [id])
+  readByMembers      ConversationMember[] @relation("LastReadMessage")
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@map("messages")
+}
