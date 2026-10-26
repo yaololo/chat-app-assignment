@@ -1,0 +1,17 @@
+# Automatically loaded by `docker compose up` for local development.
+# Deployment: docker compose -f compose.yaml up --build -d
+services:
+  server:
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./server/src:/workspace/server/src
+      # Keep container-generated Prisma code separate from host-generated code.
+      - /workspace/server/src/generated
+      - ./server/prisma:/workspace/server/prisma
+      - ./server/prisma.config.ts:/workspace/server/prisma.config.ts:ro
+      - ./server/tsconfig.json:/workspace/server/tsconfig.json:ro
+    command:
+      - sh
+      - -c
+      - npm run db:generate && npm run db:deploy && npm run dev
