@@ -2,7 +2,7 @@ import cors from "cors";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-// import { prisma } from "./db.js";
+import { prisma } from "./db.js";
 
 export const app = express();
 const clientDistPath = fileURLToPath(new URL("../dist/", import.meta.url));
@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.get("/health", async (_req, res) => {
   try {
-    // await prisma.$queryRaw`SELECT 1`;
+    await prisma.$queryRaw`SELECT 1`;
     res.json({ status: "ok" });
   } catch (error) {
     console.error("Health check failed:", error);
