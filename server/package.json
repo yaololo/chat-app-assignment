@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "node --import tsx --test 'src/**/*.test.ts'"
   },
   "author": "",
   "license": "ISC",

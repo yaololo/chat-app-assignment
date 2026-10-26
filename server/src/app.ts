@@ -3,11 +3,12 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { prisma } from "./db.js";
-import { auth } from "./auth.js";
+import { auth } from "./auth/index.js";
 
 export const app = express();
 const clientDistPath = fileURLToPath(new URL("../dist/", import.meta.url));
 
+// Should not be used in production, but useful for local development to avoid CORS issues when the client is served from a different origin.
 app.use(cors({ origin: process.env.CLIENT_ORIGIN ?? "http://localhost:5173" }));
 app.use(express.json({ limit: "16kb" }));
 app.use("/api/auth", auth);
@@ -18,16 +19,15 @@ app.use(((error, _req, res, _next) => {
   res.status(500).json({ error: "Unable to complete your request. Please try again." });
 }) as express.ErrorRequestHandler);
 
-console.log('hello')
-app.get("/health", async (_req, res) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: "ok" });
-  } catch (error) {
-    console.error("Health check failed:", error);
-    res.status(503).json({ status: "unavailable" });
-  }
-});
+// app.get("/health", async (_req, res) => {
+//   try {
+//     await prisma.$queryRaw`SELECT 1`;
+//     res.json({ status: "ok" });
+//   } catch (error) {
+//     console.error("Health check failed:", error);
+//     res.status(503).json({ status: "unavailable" });
+//   }
+// });
 
 app.use(express.static(clientDistPath));
 

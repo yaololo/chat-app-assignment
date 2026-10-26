@@ -7,17 +7,20 @@ import { createHmac } from "node:crypto";
 // This suite does not require a running database or modify local demo accounts.
 process.env.DATABASE_URL ??= "postgresql://test:test@localhost:5432/test";
 process.env.AUTH_SIGNING_SECRET = "test-only-signing-key-at-least-32-bytes";
-const { prisma } = await import("../src/db.js");
-const { app } = await import("../src/app.js");
+const { prisma } = await import("../../db.js");
+const { app } = await import("../../app.js");
 
 test("login validation, account reuse, signed cookie integrity, expiry and logout", async () => {
   const users = new Map<string, { id: string; username: string }>();
   const originalUpsert = prisma.user.upsert;
+
   prisma.user.upsert = (async ({ where }: any) => {
     if (!users.has(where.username)) users.set(where.username, { id: "demo-user-id", username: where.username });
     return users.get(where.username);
   }) as any;
+
   const server = app.listen(0, "127.0.0.1");
+  
   try {
     await once(server, "listening");
     const address = server.address();

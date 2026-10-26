@@ -1,5 +1,5 @@
 import { useSignIn } from "../../lib/auth/queries";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useAuthStore } from "../../store/store";
 import "./signin.css";
@@ -16,11 +16,14 @@ export const SigninPage = () => {
   const from: unknown = location.state?.from;
   const destination =
     typeof from === "string" && /^\/chat(?:\/|$)/.test(from) ? from : "/chat";
+
   if (user) return <Navigate to={destination} replace />;
-  const login = (event: FormEvent) => {
+
+  const login = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     signIn.mutate({ username, secret }, { onSuccess: () => setSecret("") });
   };
+
   return (
     <div className="signin-page">
       {restorationError && (
