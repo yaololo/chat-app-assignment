@@ -97,6 +97,7 @@ const Conversation = ({ id }: { id: string }) => {
           />
           <Button
             type="submit"
+            aria-busy={send.isPending}
             disabled={!draft.trim() || send.isPending || !messages.isSuccess}
           >
             {send.isPending ? "Sending…" : "Send ↗"}
