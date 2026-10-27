@@ -233,8 +233,15 @@ Backend tests cover authentication, token tampering/expiry, input validation,
 conversation access, and notification routing. HTTP tests use a local test listener
 with mocked Prisma calls. Socket tests mock the transport boundary and database;
 they do not test actual WebSocket networking, browser reconnection, or SQL migrations.
-There is no automated frontend/browser test suite yet; `app`'s test script remains
-a placeholder.
+Frontend component and page tests use Jest, React Testing Library, and jsdom. Run
+`npm --prefix app test`, `npm --prefix app run test:watch`, or
+`npm --prefix app run test:coverage`. Tests live alongside components in `tests/`
+folders. SWC transforms TypeScript/JSX, and Jest maps the `@/` alias and CSS imports.
+The tests cover shared controls, sign-in, the chat shell, the user sidebar,
+protected routing, and conversation composition. The chat shell tests mock its
+children; the sidebar and conversation are tested separately. A lightweight
+router adapter supports page tests in Jest’s jsdom environment.
+There is no real-browser end-to-end suite yet.
 
 For a manual end-to-end check, sign in as two different users in separate browser
 profiles, send messages both ways, refresh to verify persistence, restart the
