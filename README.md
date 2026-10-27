@@ -229,10 +229,16 @@ npx tsc --noEmit
 npm run build
 ```
 
-Backend tests cover authentication, token tampering/expiry, input validation,
-conversation access, and notification routing. HTTP tests use a local test listener
-with mocked Prisma calls. Socket tests mock the transport boundary and database;
+Backend tests cover authentication and token expiry/tampering, chat input and
+membership validation, chronological history, concurrent conversation creation,
+and notification routing. HTTP tests use a local test listener with mocked Prisma
+calls. Socket tests mock the transport boundary and database;
 they do not test actual WebSocket networking, browser reconnection, or SQL migrations.
+Run `npm --prefix server test`, `npm --prefix server run test:watch`, or
+`npm --prefix server run test:coverage`. Jest transforms the TypeScript tests with
+SWC; dedicated utility tests cover cookie configuration and session-token
+creation, parsing, expiry, and invalid input. The coverage command reports the
+auth, chat, middleware, token and socket modules exercised by the backend suites.
 Frontend component and page tests use Jest, React Testing Library, and jsdom. Run
 `npm --prefix app test`, `npm --prefix app run test:watch`, or
 `npm --prefix app run test:coverage`. Tests live alongside components in `tests/`
