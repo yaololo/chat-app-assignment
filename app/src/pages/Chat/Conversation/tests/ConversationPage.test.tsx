@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, it, jest } from "@jest/globals";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { useAuthStore } from "@/store/store";
+import { ChatApiError } from "../../api";
 import type { useUsersQuery } from "../../hooks/useUsersQuery";
 import type { useMessagesQuery } from "../../hooks/useMessagesQuery";
 import type { useSendMessage } from "../../hooks/useSendMessage";
@@ -39,7 +40,7 @@ const sendState = (overrides = {}) =>
     isError: false,
     ...overrides,
   } as unknown as ReturnType<typeof useSendMessage>);
-  
+
 beforeEach(() => {
   useAuthStore.setState({
     user: { id: "alice", username: "alice" },
@@ -59,6 +60,7 @@ const tree = () => (
   <MemoryRouter initialEntries={["/chat/bob"]}>
     <Routes>
       <Route path="/chat/:id" element={<ConversationPage />} />
+      <Route path="/chat/" element={<div>Chat index</div>} />
     </Routes>
   </MemoryRouter>
 );
@@ -130,6 +132,45 @@ it("blocks composition while history loads and offers retry on failure", async (
     .click(screen.getByRole("button", { name: "Try again" }));
 
   expect(refetch).toHaveBeenCalledTimes(1);
+});
+it("redirects to the chat index when the conversation user is not found", () => {
+  messageState({
+    data: undefined,
+    isError: true,
+    isSuccess: false,
+    error: new ChatApiError("User not found.", 404),
+  });
+  render(tree());
+
+  expect(screen.getByText("Chat index")).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+});
+it("redirects to the chat index when the conversation user id is invalid", () => {
+  messageState({
+    data: undefined,
+    isError: true,
+    isSuccess: false,
+    error: new ChatApiError("Choose another registered user.", 400),
+  });
+  render(tree());
+
+  expect(screen.getByText("Chat index")).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+});
+it("keeps the conversation and draft when sending fails with a 404", async () => {
+  const view = render(tree());
+  const input = screen.getByRole("textbox", { name: "Message" });
+  await userEvent.setup().type(input, "Keep this message");
+
+  sendState({
+    isError: true,
+    error: new ChatApiError("User not found.", 404),
+  });
+  view.rerender(tree());
+
+  expect(screen.queryByText("Chat index")).toBeNull();
+  expect(input).toHaveValue("Keep this message");
+  expect(screen.getByRole("alert")).toHaveTextContent("User not found.");
 });
 it("renders message content as text rather than HTML", () => {
   messageState({

@@ -1,8 +1,9 @@
 import { Textarea } from "@/components/Textarea/Textarea";
 import { Button } from "@/components/Button/Button";
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
-import { useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { useAuthStore } from "../../../store/store";
+import { ChatApiError } from "../api";
 import { useMessagesQuery } from "../hooks/useMessagesQuery";
 import { useSendMessage } from "../hooks/useSendMessage";
 import { useUsersQuery } from "../hooks/useUsersQuery";
@@ -26,7 +27,7 @@ const Conversation = ({ id }: { id: string }) => {
     if (!draft.trim() || send.isPending) return;
     send.mutate(draft, { onSuccess: () => setDraft("") });
   };
-  
+
   return (
     <>
       <header className="conversation-heading">
@@ -45,12 +46,16 @@ const Conversation = ({ id }: { id: string }) => {
         aria-live="polite"
       >
         {messages.isPending && <p className="chat-status">Loading messages…</p>}
-        {messages.isError && (
-          <div className="chat-status" role="alert">
-            <p>{messages.error.message}</p>
-            <Button onClick={() => messages.refetch()}>Try again</Button>
-          </div>
-        )}
+        {messages.isError &&
+          (messages.error instanceof ChatApiError &&
+          (messages.error.status === 400 || messages.error.status === 404) ? (
+            <Navigate to="/chat" replace />
+          ) : (
+            <div className="chat-status" role="alert">
+              <p>{messages.error.message}</p>
+              <Button onClick={() => messages.refetch()}>Try again</Button>
+            </div>
+          ))}
         {messages.isSuccess && messages.data.messages.length === 0 && (
           <div className="chat-empty">
             <h2>Say hello{peer ? ` to ${peer.username}` : ""}.</h2>

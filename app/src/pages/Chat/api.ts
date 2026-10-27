@@ -7,6 +7,16 @@ export type Message = {
   createdAt: string;
 };
 
+export class ChatApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = "ChatApiError";
+  }
+}
+
 const request = async <T>(path: string, options?: RequestInit): Promise<T> => {
   const response = await fetch(`/api/chat${path}`, {
     ...options,
@@ -15,7 +25,10 @@ const request = async <T>(path: string, options?: RequestInit): Promise<T> => {
   if (response.status === 401) useAuthStore.getState().setSession(null);
   const data = await response.json();
   if (!response.ok)
-    throw new Error(data.error ?? "Unable to load chat. Please try again.");
+    throw new ChatApiError(
+      data.error ?? "Unable to load chat. Please try again.",
+      response.status,
+    );
   return data;
 };
 
@@ -27,7 +40,7 @@ export const getMessages = (id: string, signal?: AbortSignal) =>
     `/users/${encodeURIComponent(id)}/messages`,
     { signal },
   );
-  
+
 export const sendMessage = (id: string, content: string) =>
   request<{ message: Message }>(`/users/${encodeURIComponent(id)}/messages`, {
     method: "POST",
