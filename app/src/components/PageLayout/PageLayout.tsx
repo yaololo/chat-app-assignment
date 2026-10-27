@@ -1,9 +1,10 @@
-import { Outlet } from "react-router";
+import { Outlet, useMatch } from "react-router";
 import { useAuthStore } from "../../store/store";
 import { useSignOut } from "../../lib/auth/queries";
 import "./page-layout.css";
 
 export const PageLayout = () => {
+  const isChat = !!useMatch("/chat/*");
   const loading = useAuthStore((state) => state.loading);
   const user = useAuthStore((state) => state.user);
   const signOut = useSignOut();
@@ -34,8 +35,8 @@ export const PageLayout = () => {
           </p>
         )}
       </header>
-      <main className="page-content">
-        <section className="card">
+      <main className={`page-content${isChat ? " page-content--chat" : ""}`}>
+        <section className={isChat ? "chat-container" : "card"}>
           {loading ? <p role="status">Restoring your session…</p> : <Outlet />}
         </section>
       </main>
