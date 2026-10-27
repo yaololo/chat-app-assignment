@@ -1,18 +1,29 @@
 # Little Chat
 
-A local, full-stack one-to-one messaging demo built for the technical assessment.
+A local, full-stack one-to-one messaging project.
 React renders the UI, Express handles HTTP requests, PostgreSQL stores users and
 messages through Prisma, and Socket.IO delivers live updates. No external SaaS
 service is required.
+
+## Coding styles
+
+Follows principle of proximity by grouping related codes together. Easier to manage and understand.
+
+## How it works
+- For simplicity on Auth flow, a hardcoded `chat-demo-2026` as the access secret. On login page, user need to key in user id (3–32 letters, numbers, or underscores. Case insensitive) and demo access secret to login.
+- if it is a new user it create a user and save to DB
+- if it is a existing user, log in the user
+- Once login, user can see full list of existing user on the side bar and click on the user name to start chatting.
+
+### Note
+the .env.sample should contains working env. it is not supposed happend in Prod. For the ease of setup, working envs are saved in .env.example
 
 ## Run with Docker
 
 Requires Docker with Compose. From the project root:
 
 1. Copy `server/.env.example` to `server/.env` if you do not already have one.
-2. Set `POSTGRES_PASSWORD` and `AUTH_SIGNING_SECRET` in `server/.env`. Generate
-   the signing key with `openssl rand -hex 32`; it must contain at least 32
-   bytes. Keep it separate from the shared demo login secret.
+2. Copy `.env.example` to `.env` if you do not already have one.
 3. Start the base configuration:
 
 ```sh
