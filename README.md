@@ -9,14 +9,14 @@ service is required.
 
 Requires Docker with Compose. From the project root:
 
-1. Copy `.env.example` to `.env` if you do not already have one.
-2. Set `POSTGRES_PASSWORD` and `AUTH_SIGNING_SECRET` in `.env`. Generate the signing
-   key with `openssl rand -hex 32`; it must contain at least 32 bytes. Keep it
-   separate from the shared demo login secret.
+1. Copy `server/.env.example` to `server/.env` if you do not already have one.
+2. Set `POSTGRES_PASSWORD` and `AUTH_SIGNING_SECRET` in `server/.env`. Generate
+   the signing key with `openssl rand -hex 32`; it must contain at least 32
+   bytes. Keep it separate from the shared demo login secret.
 3. Start the base configuration:
 
 ```sh
-docker compose -f compose.yaml up --build
+docker compose --env-file server/.env -f compose.yaml up --build
 ```
 
 Open http://localhost:3000. This command builds the frontend into the server image,
@@ -40,7 +40,7 @@ using this override: its mount hides the frontend build inside the image.
 ```sh
 npm --prefix app ci
 npm --prefix app run build
-docker compose up --build
+docker compose --env-file server/.env up --build
 ```
 
 Backend source edits restart the server through `tsx watch`. To update the frontend
@@ -70,10 +70,14 @@ changing its proxy configuration.
 | `DATABASE_URL` | Required for local backend/database commands; Compose constructs it using hostname `db` |
 | `PORT` | Backend port; Compose uses `3000` |
 
-Compose reads the root `.env` and passes configured values into containers. Running
-commands directly from `server/` loads `server/.env` through dotenv instead; see
-`server/.env.example`. Do not commit either file. Changing PostgreSQL initialization
-variables does not change credentials already stored in an existing database volume.
+Compose normally reads a project-root `.env` for `${...}` interpolation. Pass
+`--env-file server/.env` to make Compose use the server's environment file instead,
+so one file can provide values to Compose and direct server commands. Compose's
+`env_file:` service option is different: it only injects variables into a container
+and does not provide values for `${...}` interpolation in the Compose YAML. The
+server service already maps the required variables explicitly. Do not commit
+`server/.env`. Changing PostgreSQL initialization variables does not change
+credentials already stored in an existing database volume.
 
 To run the backend outside Docker, install its dependencies, configure
 `server/.env`, and run the following from `server/` against a reachable PostgreSQL
@@ -201,8 +205,8 @@ migration drops only the sessions table, not users or messages.
 After changing the schema, create a migration in the development container:
 
 ```sh
-docker compose exec server npm run db:migrate -- --name describe_change
-docker compose restart server
+docker compose --env-file server/.env exec server npm run db:migrate -- --name describe_change
+docker compose --env-file server/.env restart server
 ```
 
 The mounted Prisma directory saves migration files on the host. Commit those files
