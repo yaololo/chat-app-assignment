@@ -1,4 +1,6 @@
-import { useSignIn } from "../../lib/auth/queries";
+import { Input } from "@/components/Input/Input";
+import { Button } from "@/components/Button/Button";
+import { useSignIn } from "../../lib/auth/hooks/useSignIn";
 import { useState, type SubmitEvent } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useAuthStore } from "../../store/store";
@@ -43,7 +45,7 @@ export const SigninPage = () => {
       </p>
       <form onSubmit={login}>
         <label htmlFor="username">Username</label>
-        <input
+        <Input
           id="username"
           name="username"
           autoComplete="username"
@@ -63,7 +65,7 @@ export const SigninPage = () => {
           3–32 letters, numbers, or underscores. Case insensitive.
         </small>
         <label htmlFor="secret">Demo access secret</label>
-        <input
+        <Input
           id="secret"
           name="secret"
           type="password"
@@ -80,9 +82,9 @@ export const SigninPage = () => {
             {error}
           </p>
         )}
-        <button type="submit" disabled={busy}>
+        <Button type="submit" disabled={busy}>
           {busy ? "Signing you in…" : "Join chat →"}
-        </button>
+        </Button>
       </form>
       <p className="footnote">
         One shared secret for this demo. Use a demo username; anyone with access

@@ -1,5 +1,5 @@
-import { useAuthStore } from "../../../store/store";
-import type { User } from "../../../lib/auth/api";
+import { useAuthStore } from "@/store/store";
+import type { User } from "@/lib/auth/api";
 export type Message = {
   id: string;
   senderId: string;

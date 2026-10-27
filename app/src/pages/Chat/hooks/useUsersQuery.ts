@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/store";
-import { getMessages } from "./api";
+import { getUsers } from "../api";
 
-export const useMessages = (id: string) => {
+export const useUsersQuery = () => {
   const userId = useAuthStore((state) => state.user?.id);
   return useQuery({
-    queryKey: ["chat", userId, "messages", id],
+    queryKey: ["chat", userId, "users"],
     // Share the in-flight read across StrictMode remounts.
-    queryFn: () => getMessages(id),
+    queryFn: () => getUsers(),
     staleTime: Infinity,
-    enabled: !!userId && !!id,
+    enabled: !!userId,
     retry: false,
   });
 };

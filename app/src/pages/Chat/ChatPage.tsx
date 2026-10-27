@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import { UserSidebar } from "./components/UserSidebar";
+import { UserSidebar } from "./UserSidebar";
 import { useRealtime } from "./hooks/useRealtime";
 import "./chat.css";
 

@@ -4,16 +4,6 @@
   font-weight: 650;
   margin: 22px 0 8px;
 }
-.signin-page input {
-  width: 100%;
-  padding: 13px 14px;
-  border: 1px solid #ccd9cf;
-  border-radius: 9px;
-  background: #fafcf9;
-  font: inherit;
-  font-size: 14px;
-  color: #193b34;
-}
 .signin-page small {
   display: block;
   font-size: 11px;
@@ -26,4 +16,9 @@
   font-size: 11px;
   line-height: 1.7;
   margin: 22px 0 0;
+}
+
+.signin-page .ui-button {
+  width: 100%;
+  margin-top: 25px;
 }

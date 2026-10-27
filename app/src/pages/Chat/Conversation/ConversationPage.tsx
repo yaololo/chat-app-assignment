@@ -1,27 +1,32 @@
+import { Textarea } from "@/components/Textarea/Textarea";
+import { Button } from "@/components/Button/Button";
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { useParams } from "react-router";
 import { useAuthStore } from "../../../store/store";
-import { useMessages } from "../hooks/useMessages";
+import { useMessagesQuery } from "../hooks/useMessagesQuery";
 import { useSendMessage } from "../hooks/useSendMessage";
-import { useUsers } from "../hooks/useUsers";
+import { useUsersQuery } from "../hooks/useUsersQuery";
 
 const Conversation = ({ id }: { id: string }) => {
-  const users = useUsers();
+  const users = useUsersQuery();
   const peer = users.data?.users.find((user) => user.id === id);
-  const messages = useMessages(id);
+  const messages = useMessagesQuery(id);
   const send = useSendMessage(id);
   const me = useAuthStore((state) => state.user);
   const [draft, setDraft] = useState("");
   const end = useRef<HTMLDivElement>(null);
   const latestId = messages.data?.messages.at(-1)?.id;
+
   useEffect(() => {
     end.current?.scrollIntoView({ block: "nearest" });
   }, [latestId]);
+
   const submit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!draft.trim() || send.isPending) return;
     send.mutate(draft, { onSuccess: () => setDraft("") });
   };
+  
   return (
     <>
       <header className="conversation-heading">
@@ -43,7 +48,7 @@ const Conversation = ({ id }: { id: string }) => {
         {messages.isError && (
           <div className="chat-status" role="alert">
             <p>{messages.error.message}</p>
-            <button onClick={() => messages.refetch()}>Try again</button>
+            <Button onClick={() => messages.refetch()}>Try again</Button>
           </div>
         )}
         {messages.isSuccess && messages.data.messages.length === 0 && (
@@ -81,7 +86,7 @@ const Conversation = ({ id }: { id: string }) => {
           Message
         </label>
         <div className="composer-row">
-          <textarea
+          <Textarea
             id="message-input"
             placeholder="Write a message…"
             rows={2}
@@ -90,18 +95,19 @@ const Conversation = ({ id }: { id: string }) => {
             onChange={(event) => setDraft(event.target.value)}
             disabled={send.isPending || !messages.isSuccess}
           />
-          <button
+          <Button
             type="submit"
             disabled={!draft.trim() || send.isPending || !messages.isSuccess}
           >
             {send.isPending ? "Sending…" : "Send ↗"}
-          </button>
+          </Button>
         </div>
         <small>Up to 4,000 characters · Live updates via WebSocket</small>
       </form>
     </>
   );
 };
+
 export const ConversationPage = () => {
   const { id = "" } = useParams();
   return <Conversation key={id} id={id} />;

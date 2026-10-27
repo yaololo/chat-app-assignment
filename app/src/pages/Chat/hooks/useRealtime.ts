@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 import { useAuthStore } from "@/store/store";
-import { sessionKey } from "@/lib/auth/queries";
-import { mergeMessage } from "./message-cache";
-import type { Message } from "./api";
+import { sessionKey } from "@/lib/auth/query-keys";
+import { mergeMessage } from "../message-cache";
+import type { Message } from "../api";
 
 export const useRealtime = () => {
   const userId = useAuthStore((state) => state.user?.id);

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useSessionQuery } from "./queries";
-import { useAuthStore } from "../../store/store";
+import { useSessionQuery } from "./useSessionQuery";
+import { useAuthStore } from "@/store/store";
 
 // Bridges the initial server query into the shared client store; no React context.
 export const useInitializeAuth = () => {

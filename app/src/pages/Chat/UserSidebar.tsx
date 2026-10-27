@@ -1,11 +1,13 @@
+import { Input } from "@/components/Input/Input";
+import { Button } from "@/components/Button/Button";
 import { useState } from "react";
 import { NavLink } from "react-router";
-import { useUsers } from "../hooks/useUsers";
-import { useAuthStore } from "../../../store/store";
+import { useUsersQuery } from "./hooks/useUsersQuery";
+import { useAuthStore } from "../../store/store";
 
 const UserSidebar = () => {
   const [search, setSearch] = useState("");
-  const users = useUsers();
+  const users = useUsersQuery();
   const me = useAuthStore((state) => state.user);
   const filtered = users.data?.users.filter((user) =>
     user.username.toLowerCase().includes(search.toLowerCase()),
@@ -22,7 +24,7 @@ const UserSidebar = () => {
         <label className="sr-only" htmlFor="user-search">
           Search users
         </label>
-        <input
+        <Input
           id="user-search"
           placeholder="Search people…"
           value={search}
@@ -38,7 +40,7 @@ const UserSidebar = () => {
         {users.isError && (
           <div className="chat-status" role="alert">
             <p>{users.error.message}</p>
-            <button onClick={() => users.refetch()}>Try again</button>
+            <Button onClick={() => users.refetch()}>Try again</Button>
           </div>
         )}
         {filtered?.map((user) => (

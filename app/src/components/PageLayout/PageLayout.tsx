@@ -1,6 +1,7 @@
+import { Button } from "@/components/Button/Button";
 import { Outlet, useMatch } from "react-router";
 import { useAuthStore } from "../../store/store";
-import { useSignOut } from "../../lib/auth/queries";
+import { useSignOut } from "../../lib/auth/hooks/useSignOut";
 import "./page-layout.css";
 
 export const PageLayout = () => {
@@ -19,14 +20,14 @@ export const PageLayout = () => {
             little chat<span className="badge">DEMO</span>
           </div>
           {!loading && user && (
-            <button
+            <Button
               className="logout-button"
               type="button"
               disabled={signOut.isPending}
               onClick={() => signOut.mutate()}
             >
               {signOut.isPending ? "Signing out…" : "Log out"}
-            </button>
+            </Button>
           )}
         </div>
         {signOut.error && (

@@ -1,0 +1,15 @@
+.ui-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d8e3da;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  color: #193b34;
+  background: #fafcf9;
+  resize: vertical;
+}
+.ui-textarea:focus-visible {
+  outline: 3px solid #92c7b0;
+  outline-offset: 3px;
+}

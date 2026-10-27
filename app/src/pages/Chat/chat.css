@@ -38,7 +38,7 @@
   color: #6b7e72;
   overflow-wrap: anywhere;
 }
-.sidebar-heading input {
+.sidebar-heading .ui-input {
   width: 100%;
   margin-top: 12px;
   padding: 12px;
@@ -210,22 +210,12 @@
   align-items: center;
   gap: 12px;
 }
-.composer-row textarea {
+.composer-row .ui-textarea {
   flex: 1;
   min-width: 0;
-  resize: vertical;
   max-height: 150px;
-  border: 1px solid #d8e3da;
-  border-radius: 10px;
-  padding: 12px;
-  font: inherit;
-  font-size: 14px;
-  background: #fafcf9;
 }
-.composer-row textarea:focus-visible {
-  outline: 2px solid #92c7b0;
-}
-.composer-row button {
+.composer-row .ui-button {
   width: auto;
   margin: 0;
   flex-shrink: 0;
@@ -289,10 +279,10 @@
     flex-wrap: wrap;
     gap: 8px;
   }
-  .composer-row textarea {
+  .composer-row .ui-textarea {
     flex-basis: 100%;
   }
-  .composer-row button {
+  .composer-row .ui-button {
     padding: 10px;
     margin-left: auto;
   }
@@ -308,4 +298,10 @@
   }
 }
 
-.connection-status { margin: 0; padding: 8px 16px; background: #fff3d5; color: #785e22; font-size: 12px; }
+.connection-status {
+  margin: 0;
+  padding: 8px 16px;
+  background: #fff3d5;
+  color: #785e22;
+  font-size: 12px;
+}

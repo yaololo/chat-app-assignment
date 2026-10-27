@@ -1,0 +1,15 @@
+.ui-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #ccd9cf;
+  border-radius: 9px;
+  background: #fafcf9;
+  font: inherit;
+  font-size: 14px;
+  color: #193b34;
+}
+
+.ui-input:focus-visible {
+  outline: 3px solid #92c7b0;
+  outline-offset: 3px;
+}

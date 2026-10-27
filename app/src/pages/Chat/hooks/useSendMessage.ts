@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/store";
-import { sendMessage, type Message } from "./api";
-import { mergeMessage } from "./message-cache";
+import { sendMessage, type Message } from "../api";
+import { mergeMessage } from "../message-cache";
 
 export const useSendMessage = (id: string) => {
   const client = useQueryClient();
