@@ -2,7 +2,9 @@ import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
 export const getMessages: RequestHandler = async (_req, res) => {
   const conversation = await prisma.conversation.findUnique({
-    where: { directUserLow_directUserHigh: res.locals.pair },
+    where: {
+      firstUserId_secondUserId: res.locals.conversationUsers,
+    },
   });
   if (!conversation) {
     res.json({ messages: [] });

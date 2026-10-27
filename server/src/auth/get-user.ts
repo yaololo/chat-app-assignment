@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express";
-import { cookieName, cookieOptions } from "./cookie.js";
-import { readUser } from "./token-helper.js";
+import { cookieName, cookieOptions } from "../utils/cookie.js";
+import { readUser } from "../utils/token-helper.js";
 
 export const getUser: RequestHandler = (req, res) => {
   const user = readUser(req);

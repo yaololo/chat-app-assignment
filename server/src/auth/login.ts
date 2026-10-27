@@ -2,8 +2,8 @@ import { chatEvents } from "../web-socket/events.js";
 import { createHash, timingSafeEqual } from "node:crypto";
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
-import { cookieName, cookieOptions, lifetime } from "./cookie.js";
-import { createToken } from "./token-helper.js";
+import { cookieName, cookieOptions, lifetime } from "../utils/cookie.js";
+import { createToken } from "../utils/token-helper.js";
 
 // Shared access is intentional for this demo: anyone with the secret can use any username.
 const DEMO_SECRET = "chat-demo-2026";

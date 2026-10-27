@@ -7,7 +7,7 @@ import type { Server, ServerOptions, Socket } from "socket.io";
 process.env.DATABASE_URL ??= "postgresql://test:test@localhost:5432/test";
 process.env.AUTH_SIGNING_SECRET = "test-only-signing-key-at-least-32-bytes";
 const { prisma } = await import("../../db.js");
-const { createToken } = await import("../../auth/token-helper.js");
+const { createToken } = await import("../../utils/token-helper.js");
 const { attachRealtime } = await import("../socket.js");
 const { chatEvents } = await import("../events.js");
 

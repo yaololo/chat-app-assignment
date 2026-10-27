@@ -17,8 +17,8 @@ export const sendMessage: RequestHandler = async (req, res) => {
     return;
   }
 
-  const pair = res.locals.pair;
-  const where = { directUserLow_directUserHigh: pair };
+  const conversationUsers = res.locals.conversationUsers;
+  const where = { firstUserId_secondUserId: conversationUsers };
   let conversation = await prisma.conversation.findUnique({ where });
   
   if (!conversation) {
@@ -27,11 +27,11 @@ export const sendMessage: RequestHandler = async (req, res) => {
       conversation = await prisma.conversation.create({
         data: {
           type: "direct",
-          ...pair,
+          ...conversationUsers,
           members: {
             create: [
-              { userId: pair.directUserLow },
-              { userId: pair.directUserHigh },
+              { userId: conversationUsers.firstUserId },
+              { userId: conversationUsers.secondUserId },
             ],
           },
         },
@@ -67,11 +67,16 @@ export const sendMessage: RequestHandler = async (req, res) => {
       content: content.trim(),
     },
   });
-  chatEvents.emit("messages:changed", pair.directUserLow, pair.directUserHigh, {
-    id: message.id,
-    senderId: message.senderId,
-    content: message.content,
-    createdAt: message.createdAt.toISOString(),
-  });
+  chatEvents.emit(
+    "messages:changed",
+    conversationUsers.firstUserId,
+    conversationUsers.secondUserId,
+    {
+      id: message.id,
+      senderId: message.senderId,
+      content: message.content,
+      createdAt: message.createdAt.toISOString(),
+    },
+  );
   res.status(201).json({ message });
 };

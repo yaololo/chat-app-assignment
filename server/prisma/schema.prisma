@@ -22,13 +22,13 @@ model Conversation {
   type           String               @db.VarChar(32)
   // For type "direct" (case insensitive), supply the two sorted user IDs.
   // SQL checks/triggers require exactly these memberships at transaction commit.
-  directUserLow  String?              @map("direct_user_low") @db.Uuid
-  directUserHigh String?              @map("direct_user_high") @db.Uuid
+  firstUserId    String?              @map("direct_user_low") @db.Uuid
+  secondUserId   String?              @map("direct_user_high") @db.Uuid
   createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   members        ConversationMember[]
   messages       Message[]
 
-  @@unique([directUserLow, directUserHigh])
+  @@unique([firstUserId, secondUserId])
   @@map("conversations")
 }
 

@@ -1,6 +1,6 @@
 import type { Server as HttpServer } from "node:http";
 import { Server, type ServerOptions } from "socket.io";
-import { readUser } from "../auth/token-helper.js";
+import { readUser } from "../utils/token-helper.js";
 import { prisma } from "../db.js";
 import { chatEvents } from "./events.js";
 
@@ -72,11 +72,13 @@ export const attachRealtime = (
     expiryCheck.unref();
     socket.on("disconnect", () => clearInterval(expiryCheck));
   });
+
   const notifyUsers = () => {
     for (const socket of io.sockets.sockets.values()) {
       if (readUser(socket.request)) socket.emit("users:changed");
     }
   };
+
   const notifyMessages = (
     first: string,
     second: string,

@@ -13,11 +13,14 @@ const { app } = await import("../../app.js");
 test("login validation, account reuse, signed cookie integrity, expiry and logout", async () => {
   const users = new Map<string, { id: string; username: string }>();
   const originalUpsert = prisma.user.upsert;
+  const originalFindUnique = prisma.user.findUnique;
 
   prisma.user.upsert = (async ({ where }: any) => {
     if (!users.has(where.username)) users.set(where.username, { id: "demo-user-id", username: where.username });
     return users.get(where.username);
   }) as any;
+  prisma.user.findUnique = (async ({ where }: any) =>
+    [...users.values()].find(user => user.id === where.id) ?? null) as any;
 
   const server = app.listen(0, "127.0.0.1");
   
@@ -59,6 +62,7 @@ test("login validation, account reuse, signed cookie integrity, expiry and logou
   } finally {
     await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
     prisma.user.upsert = originalUpsert;
+    prisma.user.findUnique = originalFindUnique;
     await prisma.$disconnect();
   }
 });
