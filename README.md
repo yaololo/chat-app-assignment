@@ -44,20 +44,18 @@ share the same cookie. Select the other user in the sidebar and send a message.
 
 Local frontend development requires Node.js 22.23.4 or newer and npm.
 
-The automatically loaded `compose.override.yaml` mounts backend source, Prisma
-files, and **the host's `server/dist` directory**. Build the frontend locally before
-using this override: its mount hides the frontend build inside the image.
+The automatically loaded `compose.override.yaml` mounts backend source and Prisma
+files for local development. The frontend build remains in the server image, so
+you do not need to build it separately on the host.
 
 ```sh
-npm --prefix app ci
-npm --prefix app run build
 docker compose --env-file server/.env up --build
 ```
 
 Backend source edits restart the server through `tsx watch`. To update the frontend
-served at port 3000, run `npm --prefix app run build` again and refresh the browser.
-Rebuilding only the Docker image does not update the mounted host `server/dist`.
-Rebuild the server image after changing backend dependencies.
+served at port 3000, rebuild the server image with `docker compose --env-file
+server/.env up --build` and refresh the browser. Rebuild the server image after
+changing backend or frontend dependencies.
 
 For frontend hot reload, run in another terminal:
 

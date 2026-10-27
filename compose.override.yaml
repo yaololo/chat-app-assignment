@@ -6,7 +6,6 @@ services:
       NODE_ENV: development
     volumes:
       - ./server/src:/workspace/server/src
-      - ./server/dist:/workspace/server/dist:ro
       # Keep container-generated Prisma code separate from host-generated code.
       - /workspace/server/src/generated
       - ./server/prisma:/workspace/server/prisma
