@@ -3,7 +3,7 @@
 ## Demo sign-in
 
 Enter a username and the shared access secret `chat-demo-2026`. The server keeps
-the demo constant in `server/src/auth.ts`; it is not bundled into the frontend.
+the demo constant in `server/src/auth/login.ts`; it is not bundled into the frontend.
 Usernames use 3–32 ASCII letters, numbers, or underscores and are trimmed and
 lowercased. First login creates the user; later logins reuse it.
 
@@ -29,8 +29,11 @@ sessions; existing users and messages remain. The earlier migration is preserved
 so already-deployed migration histories stay consistent.
 
 The API exposes `POST /api/auth/login` (`{ username, secret }`),
-`GET /api/auth/me`, and `POST /api/auth/logout`. Successful sign-in currently opens
-a welcome screen; the messaging interface is a separate next step.
+`GET /api/auth/me`, and `POST /api/auth/logout`. Successful sign-in opens `/chat`. The sidebar lists other registered users;
+selecting one opens `/chat/:id` and loads the latest 100 messages. Messages are
+persisted and refreshed every three seconds using polling; WebSocket push and
+older-history pagination remain future work. Sends are not automatically retried
+because a lost response could otherwise cause duplicate messages.
 
 ## Running the app
 
