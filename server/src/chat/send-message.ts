@@ -1,21 +1,26 @@
-import { chatEvents } from "../realtime/events.js";
+import { chatEvents } from "../web-socket/events.js";
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
+
 export const sendMessage: RequestHandler = async (req, res) => {
   if (!req.is("application/json")) {
     res.status(415).json({ error: "Use application/json." });
     return;
   }
+
   const content = req.body?.content;
+
   if (typeof content !== "string" || !content.trim() || content.length > 4000) {
     res
       .status(400)
       .json({ error: "Enter a message of up to 4,000 characters." });
     return;
   }
+
   const pair = res.locals.pair;
   const where = { directUserLow_directUserHigh: pair };
   let conversation = await prisma.conversation.findUnique({ where });
+  
   if (!conversation) {
     try {
       // Nested creation keeps the two memberships in the same transaction as the pair.

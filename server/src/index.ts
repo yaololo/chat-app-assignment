@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { createServer } from "node:http";
-import { attachRealtime } from "./realtime/socket.js";
+import { attachRealtime } from "./web-socket/socket.js";
 import { app } from "./app.js";
 
 const port = Number(process.env.PORT ?? 3000);

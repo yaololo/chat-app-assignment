@@ -1,4 +1,4 @@
-import { chatEvents } from "../realtime/events.js";
+import { chatEvents } from "../web-socket/events.js";
 import { createHash, timingSafeEqual } from "node:crypto";
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
