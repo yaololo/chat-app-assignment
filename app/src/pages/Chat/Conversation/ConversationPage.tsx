@@ -97,7 +97,7 @@ const Conversation = ({ id }: { id: string }) => {
             {send.isPending ? "Sending…" : "Send ↗"}
           </button>
         </div>
-        <small>Up to 4,000 characters · Messages refresh every 3 seconds</small>
+        <small>Up to 4,000 characters · Live updates via WebSocket</small>
       </form>
     </>
   );

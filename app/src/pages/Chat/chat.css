@@ -307,3 +307,5 @@
     padding: 9px;
   }
 }
+
+.connection-status { margin: 0; padding: 8px 16px; background: #fff3d5; color: #785e22; font-size: 12px; }

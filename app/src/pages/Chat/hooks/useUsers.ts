@@ -6,9 +6,10 @@ export const useUsers = () => {
   const userId = useAuthStore((state) => state.user?.id);
   return useQuery({
     queryKey: ["chat", userId, "users"],
-    queryFn: ({ signal }) => getUsers(signal),
+    // Share the in-flight read across StrictMode remounts.
+    queryFn: () => getUsers(),
+    staleTime: Infinity,
     enabled: !!userId,
-    refetchInterval: 10000,
     retry: false,
   });
 };

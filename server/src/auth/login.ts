@@ -1,3 +1,4 @@
+import { chatEvents } from "../realtime/events.js";
 import { createHash, timingSafeEqual } from "node:crypto";
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
@@ -49,6 +50,7 @@ export const login: RequestHandler = async (req, res) => {
     create: { username: normalized },
     select: { id: true, username: true },
   });
+  chatEvents.emit("users:changed");
   const token = createToken(user);
   res
     .cookie(cookieName, token, { ...cookieOptions, maxAge: lifetime })

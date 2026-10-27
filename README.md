@@ -31,8 +31,10 @@ so already-deployed migration histories stay consistent.
 The API exposes `POST /api/auth/login` (`{ username, secret }`),
 `GET /api/auth/me`, and `POST /api/auth/logout`. Successful sign-in opens `/chat`. The sidebar lists other registered users;
 selecting one opens `/chat/:id` and loads the latest 100 messages. Messages are
-persisted and refreshed every three seconds using polling; WebSocket push and
-older-history pagination remain future work. Sends are not automatically retried
+persisted over HTTP, with authenticated Socket.IO notifications invalidating
+TanStack Query caches immediately. User lists and messages no longer poll.
+Initial connection and reconnection refetch active queries to recover missed events.
+Older-history pagination remains future work. Sends are not automatically retried
 because a lost response could otherwise cause duplicate messages.
 
 ## Running the app
@@ -72,3 +74,19 @@ explicitly select the base file:
 ```sh
 docker compose -f compose.yaml up --build -d
 ```
+
+## Live updates
+
+The browser uses one cookie-authenticated WebSocket while the chat layout is
+mounted. It disconnects on logout/unmount. The server checks the user at handshake,
+restricts browser origins, and disconnects expired tokens. Message notifications
+are sent only to the two participants' connected tabs, after the database write.
+User-list notifications follow successful login/upsert, including existing-user
+logins. No message content is included in notifications; HTTP endpoints still
+check permissions. The UI shows a connection banner while live updates are unavailable.
+
+Vite proxies `/socket.io` to the backend with WebSocket upgrades enabled. Restart
+Vite after changing its proxy configuration. Deployment proxies must also forward
+WebSocket upgrades. The in-process event bus supports one server instance; multiple
+replicas need shared event delivery. Reconnects recover from missed notifications;
+a durable outbox is not implemented for the database-write/notification crash gap.

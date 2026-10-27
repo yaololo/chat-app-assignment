@@ -13,7 +13,7 @@ const sign = (payload: string) =>
   createHmac("sha256", signingSecret).update(payload).digest("base64url");
 
 export const readUser = (
-  req: Request,
+  req: Pick<Request, "headers">,
 ): { id: string; username: string } | null => {
   const token = req.headers.cookie
     ?.split(";")

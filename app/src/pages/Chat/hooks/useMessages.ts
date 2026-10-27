@@ -6,9 +6,10 @@ export const useMessages = (id: string) => {
   const userId = useAuthStore((state) => state.user?.id);
   return useQuery({
     queryKey: ["chat", userId, "messages", id],
-    queryFn: ({ signal }) => getMessages(id, signal),
+    // Share the in-flight read across StrictMode remounts.
+    queryFn: () => getMessages(id),
+    staleTime: Infinity,
     enabled: !!userId && !!id,
-    refetchInterval: 3000,
     retry: false,
   });
 };

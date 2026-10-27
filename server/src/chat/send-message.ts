@@ -1,3 +1,4 @@
+import { chatEvents } from "../realtime/events.js";
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
 export const sendMessage: RequestHandler = async (req, res) => {
@@ -60,6 +61,12 @@ export const sendMessage: RequestHandler = async (req, res) => {
       senderId: res.locals.userId,
       content: content.trim(),
     },
+  });
+  chatEvents.emit("messages:changed", pair.directUserLow, pair.directUserHigh, {
+    id: message.id,
+    senderId: message.senderId,
+    content: message.content,
+    createdAt: message.createdAt.toISOString(),
   });
   res.status(201).json({ message });
 };
