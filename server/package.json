@@ -12,7 +12,9 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "test": "node --import tsx --test 'src/**/*.test.ts'"
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --runInBand"
   },
   "author": "",
   "license": "ISC",
@@ -29,10 +31,14 @@
     "socket.io": "^4.8.4"
   },
   "devDependencies": {
+    "@swc/core": "^1.16.20",
+    "@swc/jest": "^0.2.39",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1",
+    "jest": "^30.5.2",
     "prisma": "^7.10.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
